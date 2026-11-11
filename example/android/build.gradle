@@ -1,0 +1,29 @@
+buildscript {
+    ext {
+        buildToolsVersion = "37.0.0"
+        minSdkVersion = 26 // the pingfront Android SDK needs API 26
+        compileSdkVersion = 37
+        targetSdkVersion = 36
+        ndkVersion = "27.1.12297006"
+        kotlinVersion = "2.2.0" // the React Native 0.88 template's; the pingfront SDK needs nothing newer
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    }
+}
+
+apply plugin: "com.facebook.react.rootproject"
+
+// The pingfront Android SDK comes from Maven Central. `npm run android:sdk` in the package folder publishes a local
+// checkout of the SDK to ../../.maven, which Gradle reads first when it exists.
+allprojects {
+    repositories {
+        maven { url = uri("${rootDir}/../../.maven") }
+    }
+}

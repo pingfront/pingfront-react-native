@@ -1,0 +1,134 @@
+{
+  "name": "@pingfront/react-native",
+  "version": "1.0.0",
+  "description": "pingfront for React Native: a typed bridge over the native iOS and Android SDKs (in-app chat, pings, moments, offers).",
+  "main": "./lib/module/index.js",
+  "types": "./lib/typescript/src/index.d.ts",
+  "exports": {
+    ".": {
+      "pingfront-react-native-source": "./src/index.ts",
+      "types": "./lib/typescript/src/index.d.ts",
+      "default": "./lib/module/index.js"
+    },
+    "./app.plugin.js": "./app.plugin.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "lib",
+    "android/build.gradle",
+    "android/src/main",
+    "ios",
+    "plugin/build",
+    "app.plugin.js",
+    "*.podspec",
+    "scripts/cocoapods.rb",
+    "!ios/build",
+    "!ios/generated",
+    "!**/__tests__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit && tsc --noEmit -p plugin",
+    "lint": "eslint --max-warnings 0 src plugin/src example scripts",
+    "test": "jest",
+    "build": "bob build && tsc -p plugin",
+    "prepare": "bob build && tsc -p plugin",
+    "android:sdk": "node scripts/publish-android-sdk.mjs",
+    "android:check": "node scripts/check-android.mjs"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "ios",
+    "android",
+    "support chat",
+    "in-app messaging"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pingfront/pingfront-react-native.git"
+  },
+  "author": "pingfront (https://pingfront.sh)",
+  "license": "MIT",
+  "homepage": "https://pingfront.sh/docs/react-native",
+  "bugs": {
+    "url": "https://github.com/pingfront/pingfront-react-native/issues"
+  },
+  "dependencies": {
+    "@expo/config-plugins": "^58.0.11"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^2.1.1",
+    "@eslint/eslintrc": "^3.3.7",
+    "@eslint/js": "^9.39.5",
+    "@react-native/babel-preset": "0.88.1",
+    "@react-native/codegen": "0.88.1",
+    "@react-native/eslint-config": "0.88.1",
+    "@react-native/jest-preset": "0.88.1",
+    "@testing-library/react-native": "^14.1.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.2.0",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-ft-flow": "^3.0.11",
+    "eslint-plugin-prettier": "^5.5.7",
+    "jest": "^30.5.2",
+    "prettier": "^3.9.10",
+    "react": "19.3.0",
+    "react-native": "0.88.1",
+    "react-native-builder-bob": "^0.44.1",
+    "test-renderer": "^1.0.0",
+    "typescript": "^6.0.3"
+  },
+  "peerDependencies": {
+    "expo": ">=54",
+    "react": ">=19",
+    "react-native": ">=0.80"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  },
+  "codegenConfig": {
+    "name": "PingfrontSpec",
+    "type": "all",
+    "jsSrcsDir": "src/specs",
+    "android": {
+      "javaPackageName": "dev.pingfront.reactnative"
+    },
+    "ios": {
+      "componentProvider": {
+        "PingfrontChatView": "PingfrontChatViewComponentView"
+      }
+    }
+  },
+  "prettier": {
+    "quoteProps": "consistent",
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false
+  }
+}

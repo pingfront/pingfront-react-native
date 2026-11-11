@@ -1,0 +1,24 @@
+// Gradle init script: publishes a local checkout of the pingfront Android SDK to a Maven folder, the way
+// Maven Central will serve it, without changing that build. Used by publish-android-sdk.mjs.
+//   ./gradlew -I publish-android-sdk.gradle -PpingfrontMavenRepo=<dir> -Ppingfront.version=1.0.0 publishPingfrontForReactNative
+// The SDK's own build (buildSrc Publishing.kt) defines the `release` publication; this only adds the folder
+// it is published to.
+def modules = ['pingfront-core', 'pingfront-ui', 'pingfront-reports', 'pingfront', 'pingfront-push', 'pingfront-billing']
+
+allprojects { project ->
+    if (!modules.contains(project.name)) return
+    project.pluginManager.withPlugin('maven-publish') {
+        project.publishing.repositories {
+            maven {
+                name = 'pingfrontLocal'
+                url = project.file(project.property('pingfrontMavenRepo'))
+            }
+        }
+    }
+}
+
+rootProject {
+    tasks.register('publishPingfrontForReactNative') {
+        modules.each { name -> dependsOn(":${name}:publishReleasePublicationToPingfrontLocalRepository") }
+    }
+}

@@ -1,0 +1,63 @@
+// The React Native bridge over the pingfront Android SDK (sh.pingfront:*), which comes from Maven Central.
+
+ext.Pingfront = [
+  minSdkVersion: 26,
+  // The SDK's minimum (pingfront-ui's minCompileSdk); React Native 0.88 and Expo 58 apps compile against 37.
+  compileSdkVersion: 36,
+  sdkVersion: "1.0.0",
+]
+
+// The embedded chat view (<PingfrontChatView />) is the SDK's own `PingFrontChatView`, an Android View that owns its
+// Compose composition, so the bridge's Kotlin needs no Compose compiler: it builds with whatever Kotlin Gradle plugin
+// the app declares.
+
+def extOrDefault = { name ->
+  rootProject.ext.has(name) ? rootProject.ext.get(name) : Pingfront[name]
+}
+
+// Optional native modules, switched by gradle.properties (the Expo config plugin writes these):
+//   pingfront.push=true      FCM push (pingfront-push, brings Firebase Messaging)
+//   pingfront.billing=true   Google Play Billing and In-App Review (pingfront-billing)
+def flag = { name -> (rootProject.findProperty(name) ?: "false").toString().toBoolean() }
+
+apply plugin: "com.android.library"
+if (project.extensions.findByName("kotlin") == null) {
+  apply plugin: "kotlin-android"
+}
+apply plugin: "com.facebook.react"
+
+repositories {
+  google()
+  mavenCentral()
+}
+
+android {
+  namespace = "dev.pingfront.reactnative"
+  compileSdk = extOrDefault("compileSdkVersion") as int
+
+  defaultConfig {
+    minSdk = Math.max(extOrDefault("minSdkVersion") as int, 26)
+  }
+
+  lint {
+    warningsAsErrors = true
+    abortOnError = true
+  }
+}
+
+kotlin {
+  compilerOptions {
+    allWarningsAsErrors = true
+  }
+}
+
+dependencies {
+  implementation "com.facebook.react:react-android"
+  implementation "sh.pingfront:pingfront:${Pingfront.sdkVersion}"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0"
+  // The SDK's own version: kotlinx-serialization 1.9 is the line built for Kotlin 2.2, which React Native 0.88 and
+  // Expo 58 apps compile with.
+  implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0"
+  if (flag("pingfront.push")) implementation "sh.pingfront:pingfront-push:${Pingfront.sdkVersion}"
+  if (flag("pingfront.billing")) implementation "sh.pingfront:pingfront-billing:${Pingfront.sdkVersion}"
+}
